@@ -1,31 +1,71 @@
-import 'package:community_feed_app/services/auth_service.dart';
+import 'dart:developer';
+
+import 'package:community_feed_app/services/data_provider.dart';
+import 'package:community_feed_app/utils/apis.dart';
 import 'package:flutter/material.dart';
 
 class AuthViewModel extends ChangeNotifier {
-  bool isLoading = false;
-  String? errorMessage;
+  final DataProvider _dataProvider = DataProvider();
 
-  Future<bool> login(String email, String password) async {
-    isLoading = true;
-    notifyListeners();
+  Future<bool?> logIn({
+    required String email,
+    required String password,
+  }) async {
+    bool _isSuccess = false;
 
-    try {
-      // API call for login
-      final response = await AuthService().login(email, password);
-      // if (response) {
-      //   // Store session data
-      //   return true;
-      // }
-    } catch (e) {
-      errorMessage = e.toString();
-    } finally {
-      isLoading = false;
-      notifyListeners();
+    dynamic data = {
+      "email": email.toLowerCase(),
+      "password": password,
+    };
+    print("Login Data: $data");
+
+    var response =
+        await _dataProvider.fetchData("POST", APIs.feedLogin, data: data);
+
+    if (response != null) {
+      try {
+        if (response.statusCode == 200) {
+          _isSuccess = true;
+        } else {
+          _isSuccess = false;
+        }
+      } catch (err, stackTrace) {
+        _isSuccess = false;
+        log(err.toString());
+        log(stackTrace.toString());
+      }
+      return _isSuccess;
     }
-    return false;
   }
 
-  void logout() {
-    // Clear session and navigate to login screen
+  Future<bool?> logOut({
+    required String email,
+    required String password,
+  }) async {
+    bool _isSuccess = false;
+
+    dynamic data = {
+      "email": email.toLowerCase(),
+      "password": password,
+    };
+    print("Login Data: $data");
+
+    var response =
+        await _dataProvider.fetchData("POST", APIs.logout, data: data);
+
+    if (response != null) {
+      try {
+        if (response.statusCode == 200) {
+          _isSuccess = true;
+        } else {
+          _isSuccess = false;
+        }
+      } catch (err, stackTrace) {
+        _isSuccess = false;
+        log(err.toString());
+        log(stackTrace.toString());
+      }
+      return _isSuccess;
+    }
   }
 }
