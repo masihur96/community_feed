@@ -12,4 +12,5 @@ class FeedColors {
   static const Color feedBlack = Color(0xff000000);
   static const Color feedWhiteBG = Color(0xffF3F3F3);
   static const Color feedGrey = Colors.grey;
+  static const Color feedGreyLight = Color(0xffF2F4F7);
 }

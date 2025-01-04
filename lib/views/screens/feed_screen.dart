@@ -53,14 +53,14 @@ class _FeedScreenState extends State<FeedScreen> {
                   height: screenSize(context, .02),
                 ),
                 Text(
-                  "Python Developer Community",
+                  "Appifylab Assesment 2025",
                   style: Theme.of(context)
                       .textTheme
                       .bodyLarge!
                       .copyWith(color: FeedColors.feedWhite),
                 ),
                 Text(
-                  "#General",
+                  "Welcome to the Appifylab Community",
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall!
@@ -188,6 +188,7 @@ class _FeedScreenState extends State<FeedScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: FeedColors.feedGreyLight,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.group),

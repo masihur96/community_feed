@@ -11,28 +11,44 @@ class PostViewModel extends ChangeNotifier {
   final DataProvider _dataProvider = DataProvider();
 
   LocalSession localSession = LocalSession();
-  // Method to create a new notice
-  Future<bool> createFeed({
-    required String title,
-    required String message,
+  // Method to create a new Post
+  Future<bool?> createFeed({
+    required String post,
+    String? bgColor,
   }) async {
     bool _isSuccess = false;
     // Prepare data for POST request
-    dynamic data;
-    data = {
-      "title": title,
-      "message": message,
+
+    String? sessionToken = await localSession.getAccessToken();
+
+    const String tokenType = "Bearer";
+
+    // Headers with token
+    final headers = {
+      "Authorization": "$tokenType $sessionToken", // Include the token
+    };
+    dynamic data = {
+      "feed_txt": post,
+      "community_id": "2914",
+      "space_id": "5883",
+      "uploadType": "text",
+      "activity_type": "group",
+      if (bgColor != null) "bg_color": bgColor,
+      "is_background": bgColor == null ? 0 : 1,
     };
 
     // Perform the POST request
     var response = await _dataProvider.fetchData(
       "POST",
       APIs.createFeed,
+      header: headers,
       data: data,
     );
 
+    print("response::$response");
+
     try {
-      if (response!.statusCode == 201) {
+      if (response!.statusCode == 200) {
         _isSuccess = true;
       } else {
         _isSuccess = false;
