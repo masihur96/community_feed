@@ -1,5 +1,6 @@
 import 'package:community_feed_app/utils/screen_size.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 ThemeData buildDarkTheme(BuildContext context) {
   return ThemeData(
@@ -7,35 +8,42 @@ ThemeData buildDarkTheme(BuildContext context) {
     primarySwatch: Colors.blue,
     scaffoldBackgroundColor: Colors.black,
     textTheme: TextTheme(
-      titleLarge: TextStyle(
+      titleLarge: GoogleFonts.figtree(
+          textStyle: TextStyle(
         fontSize: screenSize(context, .05),
         color: Colors.white,
         fontWeight: FontWeight.w100,
-      ),
-      titleMedium: TextStyle(
+      )),
+      titleMedium: GoogleFonts.figtree(
+          textStyle: TextStyle(
         fontSize: screenSize(context, 0.04),
         color: Colors.white,
         fontWeight: FontWeight.w100,
-      ),
-      titleSmall: TextStyle(
+      )),
+      titleSmall: GoogleFonts.figtree(
+          textStyle: TextStyle(
         fontSize: screenSize(context, .03),
         color: Colors.white,
         fontWeight: FontWeight.w300,
-      ),
-      bodyLarge: TextStyle(
+      )),
+      bodyLarge: GoogleFonts.figtree(
+          textStyle: TextStyle(
         fontSize: screenSize(context, .045),
         color: Colors.white,
         fontWeight: FontWeight.w900,
-      ),
-      bodyMedium: TextStyle(
+      )),
+      bodyMedium: GoogleFonts.figtree(
+          textStyle: TextStyle(
         fontSize: screenSize(context, .035),
         color: Colors.white,
         fontWeight: FontWeight.w500,
-      ),
-      bodySmall: TextStyle(
-        fontSize: screenSize(context, .03),
-        color: Colors.white,
-        fontWeight: FontWeight.w400,
+      )),
+      bodySmall: GoogleFonts.figtree(
+        textStyle: TextStyle(
+          fontSize: screenSize(context, .03),
+          color: Colors.white,
+          fontWeight: FontWeight.w400,
+        ),
       ),
     ),
   );

@@ -1,11 +1,14 @@
 import 'dart:developer';
 
 import 'package:community_feed_app/services/data_provider.dart';
+import 'package:community_feed_app/services/local_session.dart';
 import 'package:community_feed_app/utils/apis.dart';
 import 'package:flutter/material.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final DataProvider _dataProvider = DataProvider();
+
+  LocalSession localSession = LocalSession();
 
   Future<bool?> logIn({
     required String email,
@@ -17,7 +20,6 @@ class AuthViewModel extends ChangeNotifier {
       "email": email.toLowerCase(),
       "password": password,
     };
-    print("Login Data: $data");
 
     var response =
         await _dataProvider.fetchData("POST", APIs.feedLogin, data: data);
@@ -25,6 +27,7 @@ class AuthViewModel extends ChangeNotifier {
     if (response != null) {
       try {
         if (response.statusCode == 200) {
+          localSession.setAccessToken(response.data["token"]);
           _isSuccess = true;
         } else {
           _isSuccess = false;

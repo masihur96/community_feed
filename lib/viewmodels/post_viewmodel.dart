@@ -1,4 +1,4 @@
-import 'dart:nativewrappers/_internal/vm/lib/developer.dart';
+import 'dart:developer';
 
 import 'package:community_feed_app/services/data_provider.dart';
 import 'package:community_feed_app/utils/apis.dart';

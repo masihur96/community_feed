@@ -1,4 +1,6 @@
+import 'dart:developer';
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
@@ -34,6 +36,12 @@ class DataProvider {
     dynamic query,
     dynamic header,
   }) async {
+    log("METHOD:::::$method");
+    log("URL:::::$url");
+    log("DATA:::::$data");
+    log("QUERY:::::$query");
+    log("Header:::::$header");
+
     try {
       DateTime startTime = DateTime.now();
       Response response = await _dio.request(
@@ -45,7 +53,6 @@ class DataProvider {
           method: method.toUpperCase(),
         ),
       );
-
 
       DateTime endTime = DateTime.now();
       Duration diff = endTime.difference(startTime);
