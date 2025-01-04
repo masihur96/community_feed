@@ -1,14 +1,16 @@
 import 'dart:developer';
 
 import 'package:community_feed_app/services/data_provider.dart';
+import 'package:community_feed_app/services/local_session.dart';
 import 'package:community_feed_app/utils/apis.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/post_model.dart';
 
 class PostViewModel extends ChangeNotifier {
   final DataProvider _dataProvider = DataProvider();
 
+  LocalSession localSession = LocalSession();
   // Method to create a new notice
   Future<bool> createFeed({
     required String title,
@@ -46,36 +48,124 @@ class PostViewModel extends ChangeNotifier {
   }
 
   // Method to fetch Feeds
-  Future<List<PostModel>> getFeeds({
-    required String communityId,
-  }) async {
-    List<PostModel> feedsData = []; // List to store the fetched notices
-    // Request header
+  Future<List<CommunityModel>> getCommunity() async {
+    List<CommunityModel> feedList = [];
 
-    dynamic query = {
-      "communityId": communityId, // Uncomment if needed
+    // Retrieve the session token
+    String? sessionToken = await localSession.getAccessToken();
+
+    const String tokenType = "Bearer";
+
+    dynamic data = {
+      "community_id": "2914", // Ensure this is valid
+      "space_id": "5883", // Replace with actual dynamic value if necessary
     };
-    // Perform the GET request
-    var response = await _dataProvider.fetchData("GET", APIs.getCommunityFeed,
-        query: query);
+
+    // Headers with token
+    final headers = {
+      "Authorization": "$tokenType $sessionToken", // Include the token
+    };
+
+    // API Call
+    var response = await _dataProvider.fetchData(
+      "POST",
+      APIs.getCommunityFeed,
+      data: data,
+      header: headers, // Pass the headers
+    );
 
     if (response != null) {
       if (response.statusCode == 200) {
         try {
-          var data = response.data["data"];
-        } catch (e, stackTrace) {
-          // Log the error and stack trace
-          print(e);
-          print(stackTrace);
-          // Optionally, handle the error or rethrow it
-          rethrow; // Rethrow exception if necessary
+          dynamic data = response.data;
+          for (var json in data) {
+            feedList.add(
+              CommunityModel(
+                id: json["id"] ?? 0,
+                schoolId: json["school_id"] ?? 0,
+                userId: json["user_id"] ?? 0,
+                courseId: json["course_id"],
+                communityId: json["community_id"] ?? 0,
+                groupId: json["group_id"],
+                feedTxt: json["feed_txt"] ?? "",
+                status: json["status"] ?? "",
+                slug: json["slug"] ?? "",
+                title: json["title"] ?? "",
+                activityType: json["activity_type"] ?? "",
+                isPinned: json["is_pinned"] ?? 0,
+                fileType: json["file_type"] ?? "",
+                files: json["files"] == null
+                    ? []
+                    : List<FileElement>.from(
+                        json["files"]!.map((x) => FileElement.fromJson(x))),
+                likeCount: json["like_count"] ?? 0,
+                commentCount: json["comment_count"] ?? 0,
+                shareCount: json["share_count"] ?? 0,
+                shareId: json["share_id"] ?? 0,
+                metaData: json["meta_data"] == null
+                    ? null
+                    : MetaDataClass.fromJson(json["meta_data"]),
+                createdAt: DateTime.tryParse(json["created_at"] ?? ""),
+                updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
+                feedPrivacy: json["feed_privacy"] ?? "",
+                isBackground: json["is_background"] ?? 0,
+                bgColor: json["bg_color"] ?? "",
+                pollId: json["poll_id"],
+                lessonId: json["lesson_id"],
+                spaceId: json["space_id"] ?? 0,
+                videoId: json["video_id"],
+                streamId: json["stream_id"],
+                blogId: json["blog_id"],
+                scheduleDate: json["schedule_date"],
+                timezone: json["timezone"] ?? "",
+                isAnonymous: json["is_anonymous"] ?? 0,
+                meetingId: json["meeting_id"],
+                sellerId: json["seller_id"],
+                publishDate: DateTime.tryParse(json["publish_date"] ?? ""),
+                isFeedEdit: json["is_feed_edit"] ?? false,
+                name: json["name"] ?? "",
+                pic: json["pic"] ?? "",
+                uid: json["uid"] ?? 0,
+                isPrivateChat: json["is_private_chat"] ?? 0,
+                group: json["group"],
+                user: json["user"] == null ? null : User.fromJson(json["user"]),
+                poll: json["poll"],
+                follow: json["follow"],
+                like: json["like"] == null ? null : Like.fromJson(json["like"]),
+                likeType: json["likeType"] == null
+                    ? []
+                    : List<LikeType>.from(
+                        json["likeType"]!.map((x) => LikeType.fromJson(x))),
+                savedPosts: json["savedPosts"],
+                comments: json["comments"] == null
+                    ? []
+                    : List<dynamic>.from(json["comments"]!.map((x) => x)),
+                meta: json["meta"] == null
+                    ? null
+                    : PurpleMeta.fromJson(json["meta"]),
+              ),
+            );
+          }
+
+          // CommunityModel.fromJson(response.data);
+        } catch (e) {
+          if (kDebugMode) {
+            print("Error parsing response: $e");
+          }
         }
       } else {
-        // Handle HTTP error response
-        throw Exception('Failed to load notices: ${response.statusMessage}');
+        if (kDebugMode) {
+          print(
+            "Failed with status code: ${response.statusCode} and response: ${response.data}",
+          );
+        }
+      }
+    } else {
+      if (kDebugMode) {
+        print("Response is null. Verify network connectivity and endpoint.");
       }
     }
 
-    return feedsData; // Return the list of notices
+    return feedList;
   }
 }

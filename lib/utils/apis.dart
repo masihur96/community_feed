@@ -7,7 +7,7 @@ class APIs {
 
   //To Community Feed
   static const String getCommunityFeed =
-      baseUrl + "/api/app/teacher/community/getFeed?status=feed&";
+      baseUrl + "/api/app/teacher/community/getFeed?status=feed";
   //To Create Feed
   static const String createFeed =
       baseUrl + "/api/app/teacher/community/createFeedWithUpload?";

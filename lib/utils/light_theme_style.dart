@@ -1,3 +1,4 @@
+import 'package:community_feed_app/utils/app_color.dart';
 import 'package:community_feed_app/utils/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,7 +7,7 @@ ThemeData buildLightTheme(BuildContext context) {
   return ThemeData(
     primarySwatch: Colors.blue,
     brightness: Brightness.light,
-    scaffoldBackgroundColor: Colors.white,
+    scaffoldBackgroundColor: FeedColors.feedWhiteBG,
     textTheme: TextTheme(
       titleLarge: GoogleFonts.figtree(
         textStyle: TextStyle(
