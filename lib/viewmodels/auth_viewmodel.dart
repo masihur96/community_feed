@@ -41,25 +41,26 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool?> logOut({
-    required String email,
-    required String password,
-  }) async {
+  Future<bool?> logOut() async {
     bool _isSuccess = false;
 
-    dynamic data = {
-      "email": email.toLowerCase(),
-      "password": password,
+    String? sessionToken = await localSession.getAccessToken();
+
+    const String tokenType = "Bearer";
+
+    // Headers with token
+    final headers = {
+      "Authorization": "$tokenType $sessionToken", // Include the token
     };
-    print("Login Data: $data");
 
     var response =
-        await _dataProvider.fetchData("POST", APIs.logout, data: data);
+        await _dataProvider.fetchData("POST", APIs.logout, header: headers);
 
     if (response != null) {
       try {
         if (response.statusCode == 200) {
           _isSuccess = true;
+          localSession.clearPrefData();
         } else {
           _isSuccess = false;
         }

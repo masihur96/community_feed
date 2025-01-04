@@ -16,6 +16,17 @@ class LocalSession {
     return result;
   }
 
+  Future<bool> clearPrefData() async {
+    try {
+      final SharedPreferences sf = await SharedPreferences.getInstance();
+      return await sf.clear();
+    } catch (e) {
+      // Log or handle the error if needed
+      print('Error clearing preferences: $e');
+      return false; // Return false if clearing fails
+    }
+  }
+
   // static Future<void> saveUserToSharedPreferences(User user) async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
   //   String userJson = json.encode(user.toJson());

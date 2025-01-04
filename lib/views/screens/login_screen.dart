@@ -1,3 +1,4 @@
+import 'package:community_feed_app/services/local_session.dart';
 import 'package:community_feed_app/utils/app_color.dart';
 import 'package:community_feed_app/utils/screen_size.dart';
 import 'package:community_feed_app/viewmodels/auth_viewmodel.dart';
@@ -14,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  LocalSession localSession = LocalSession();
   bool _isLoading = false;
   bool _isSecure = false;
   bool _isRemember = false;
@@ -21,6 +23,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
   String _email = "";
   String _password = "";
+
+  @override
+  void initState() {
+    navigateToNext();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  navigateToNext() async {
+    String? sessionToken = await localSession.getAccessToken();
+    if (sessionToken != null && sessionToken.isNotEmpty) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => FeedScreen()),
+        (Route<dynamic> route) => false,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -218,15 +239,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              child: Text(
-                                'Login',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(
+                              child: _isLoading
+                                  ? const CircularProgressIndicator(
                                       color: FeedColors.tealDeep,
+                                    )
+                                  : Text(
+                                      'Login',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge!
+                                          .copyWith(
+                                            color: FeedColors.tealDeep,
+                                          ),
                                     ),
-                              ),
                             ),
                           ),
                         ],

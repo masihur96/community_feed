@@ -1,10 +1,11 @@
 import 'package:community_feed_app/models/post_model.dart';
 import 'package:community_feed_app/utils/app_color.dart';
 import 'package:community_feed_app/utils/screen_size.dart';
-import 'package:community_feed_app/views/components/comment_bottomsheet.dart';
+import 'package:community_feed_app/viewmodels/auth_viewmodel.dart';
+import 'package:community_feed_app/views/components/post_card.dart';
 import 'package:community_feed_app/views/screens/create_post_screen.dart';
+import 'package:community_feed_app/views/screens/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../viewmodels/post_viewmodel.dart';
 
@@ -17,6 +18,8 @@ class _FeedScreenState extends State<FeedScreen> {
   final PostViewModel _postViewModel = PostViewModel();
   List<CommunityModel> feedList = [];
 
+  bool _isFetchLoading = false;
+
   @override
   void initState() {
     getCommunityFeed(); //Set User Object from Preference
@@ -24,51 +27,20 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 
   getCommunityFeed() async {
-    //Get Server Community Data
-    List<CommunityModel> communityModel = await _postViewModel.getCommunity();
-
-    print(communityModel.length);
-
-    // if (communityModel != null) {}
+    _isFetchLoading = true;
+    feedList = [];
+    feedList = await _postViewModel.getCommunity();
+    _isFetchLoading = false;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final postViewModel = Provider.of<PostViewModel>(context);
-    final List<Map<String, dynamic>> posts = [
-      {
-        "userName": "Alexander John",
-        "postTime": "2 days ago",
-        "postText":
-            "Hello everyone, this is a post from app to see if attached link is working or not. Here is a link https://www.merriam-webster.com/dictionary/link but I think this is not working. This should work but not working!!!!",
-        "imageUrl": "https://via.placeholder.com/400",
-        "likes": 2,
-        "comments": 12,
-      },
-      {
-        "userName": "Emily Watson",
-        "postTime": "1 hour ago",
-        "postText": "This is another post to check functionality. Welcome!",
-        "imageUrl": "https://via.placeholder.com/400",
-        "likes": 5,
-        "comments": 20,
-      },
-      {
-        "userName": "John Doe",
-        "postTime": "5 minutes ago",
-        "postText": "Flutter development is awesome! #Flutter",
-        "imageUrl": "https://via.placeholder.com/400",
-        "likes": 10,
-        "comments": 50,
-      },
-    ];
-
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100), // Set custom height
         child: AppBar(
           backgroundColor: FeedColors.tealDeep, // Background color
-
           title: GestureDetector(
             onTap: () {
               getCommunityFeed();
@@ -97,9 +69,7 @@ class _FeedScreenState extends State<FeedScreen> {
               ],
             ),
           ),
-
           centerTitle: true,
-
           leading: Padding(
             padding: const EdgeInsets.only(top: 10.0),
             child: IconButton(
@@ -193,21 +163,26 @@ class _FeedScreenState extends State<FeedScreen> {
 
             // Post Cards
             Expanded(
-              child: ListView.builder(
-                itemCount: posts.length,
-                itemBuilder: (context, index) {
-                  final post = posts[index];
-                  return _buildPostCard(
-                    userName: post['userName'],
-                    postTime: post['postTime'],
-                    postText: post['postText'],
-                    imageUrl: post['imageUrl'],
-                    likes: post['likes'],
-                    comments: post['comments'],
-                    context: context,
-                  );
-                },
-              ),
+              child: _isFetchLoading
+                  ? Center(child: const CircularProgressIndicator())
+                  : ListView.builder(
+                      itemCount: feedList.length,
+                      itemBuilder: (context, index) {
+                        final post = feedList[index];
+                        return PostCard(
+                          userName: post.name,
+                          profilePic:
+                              post.user == null ? "" : post.user!.profilePic,
+                          postTime: post.createdAt.toString(),
+                          postText: post.feedTxt,
+                          imageUrl: post.files.isEmpty
+                              ? ""
+                              : post.files.first.fileLoc,
+                          likes: post.likeCount,
+                          comments: post.commentCount,
+                        );
+                      },
+                    ),
             ),
           ],
         ),
@@ -255,8 +230,27 @@ class _FeedScreenState extends State<FeedScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
+                      onPressed: () async {
+                        AuthViewModel _authViewModel = AuthViewModel();
+                        bool? isSuccess = await _authViewModel.logOut();
+
+                        if (isSuccess != null && isSuccess) {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => LoginScreen(),
+                            ),
+                            (Route<dynamic> route) => false,
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Somthing went wrong"),
+                            ),
+                          );
+
+                          Navigator.of(context).pop();
+                        }
                       },
                       child: const Text("Yes"),
                     ),
@@ -276,145 +270,4 @@ class _FeedScreenState extends State<FeedScreen> {
       },
     );
   }
-}
-
-Widget _buildPostCard({
-  required String userName,
-  required String postTime,
-  required String postText,
-  required BuildContext context,
-  String? imageUrl,
-  required int likes,
-  required int comments,
-}) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 10.0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // User Info
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.grey[300],
-                  child: const Icon(Icons.person, color: Colors.white),
-                ),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      userName,
-                      style: Theme.of(context).textTheme.titleMedium!,
-                    ),
-                    Text(
-                      postTime,
-                      style: Theme.of(context).textTheme.bodySmall!,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Icon(Icons.more_vert),
-          ],
-        ),
-        const Divider(
-          thickness: .8,
-        ),
-
-        // Post Text
-        Text(
-          postText,
-          style: Theme.of(context).textTheme.bodyMedium!,
-        ),
-
-        // Post Image (if available)
-        if (imageUrl != null) ...[
-          SizedBox(height: 10),
-          Image.network(
-            imageUrl,
-            fit: BoxFit.fitWidth,
-            height: screenSize(context, .4),
-            width: screenSize(context, 1),
-          ),
-        ],
-
-        SizedBox(height: 10),
-
-        // Reactions
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const CircleAvatar(
-                radius: 8,
-                backgroundColor: FeedColors.likeColor,
-                child: Icon(Icons.thumb_up_alt_outlined,
-                    size: 10, color: FeedColors.feedWhite)),
-            const CircleAvatar(
-                radius: 8,
-                backgroundColor: FeedColors.heartColor,
-                child: Icon(Icons.favorite,
-                    size: 10, color: FeedColors.feedWhite)),
-            const SizedBox(width: 5),
-            Text(
-              "You and $likes other",
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(color: FeedColors.feedBlack),
-            ),
-            const Spacer(),
-            const Icon(Icons.comment_bank_outlined,
-                size: 15, color: FeedColors.feedBlack),
-            const SizedBox(width: 5),
-            GestureDetector(
-                onTap: () {
-                  showBottomSheetDialog(context);
-                },
-                child: Text(
-                  "$comments Comments",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(color: FeedColors.feedBlack),
-                )),
-          ],
-        ),
-
-        SizedBox(height: 20),
-
-        // Reactions
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Icon(Icons.thumb_up_alt, color: FeedColors.likeColor),
-            const SizedBox(width: 5),
-            Text(
-              "Like",
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  color: FeedColors.likeColor, fontWeight: FontWeight.w800),
-            ),
-            const Spacer(),
-            const Icon(
-              Icons.comment_bank,
-              color: FeedColors.feedBlack,
-            ),
-            const SizedBox(width: 5),
-            GestureDetector(
-                onTap: () {
-                  showBottomSheetDialog(context);
-                },
-                child: Text(
-                  "Comment",
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      color: FeedColors.feedBlack, fontWeight: FontWeight.w800),
-                )),
-          ],
-        ),
-      ],
-    ),
-  );
 }
