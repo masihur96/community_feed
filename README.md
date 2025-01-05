@@ -4,12 +4,42 @@ A Flutter application built with the MVVM architecture, designed to display comm
 
 ## **Screenshots**
 
-![login](https://github.com/user-attachments/assets/b84b40f5-ca6c-4bd5-b1c6-7fc2d9854bed)
-![feed](https://github.com/user-attachments/assets/a126c32b-30f1-4e01-9c65-a2b0eae18f1f)
-![reaction](https://github.com/user-attachments/assets/6aec5b5e-bbb5-4031-bc4c-ee312a71d183)
-![comments](https://github.com/user-attachments/assets/0a5df1c9-bbeb-4ab4-ba2e-43f3dd8fcc90)
-![create_post](https://github.com/user-attachments/assets/9b7eda74-6123-490f-bff3-29ab52c5f10c)
-![logout](https://github.com/user-attachments/assets/f2c974d0-bd7c-42dc-b9d0-64f040d3078d)
+## **Screenshots**
+
+<div style="display: flex; flex-wrap: nowrap; gap: 10px; overflow-x: auto;">
+
+  <div style="flex-shrink: 0; width: 150px;">
+    <img src="https://github.com/user-attachments/assets/b84b40f5-ca6c-4bd5-b1c6-7fc2d9854bed" alt="login" style="width: 100%; border-radius: 8px;" />
+    <p align="center">Login</p>
+  </div>
+
+  <div style="flex-shrink: 0; width: 150px;">
+    <img src="https://github.com/user-attachments/assets/a126c32b-30f1-4e01-9c65-a2b0eae18f1f" alt="feed" style="width: 100%; border-radius: 8px;" />
+    <p align="center">Feed</p>
+  </div>
+
+  <div style="flex-shrink: 0; width: 150px;">
+    <img src="https://github.com/user-attachments/assets/6aec5b5e-bbb5-4031-bc4c-ee312a71d183" alt="reaction" style="width: 100%; border-radius: 8px;" />
+    <p align="center">Reaction</p>
+  </div>
+
+  <div style="flex-shrink: 0; width: 150px;">
+    <img src="https://github.com/user-attachments/assets/0a5df1c9-bbeb-4ab4-ba2e-43f3dd8fcc90" alt="comments" style="width: 100%; border-radius: 8px;" />
+    <p align="center">Comments</p>
+  </div>
+
+  <div style="flex-shrink: 0; width: 150px;">
+    <img src="https://github.com/user-attachments/assets/9b7eda74-6123-490f-bff3-29ab52c5f10c" alt="create_post" style="width: 100%; border-radius: 8px;" />
+    <p align="center">Create Post</p>
+  </div>
+
+  <div style="flex-shrink: 0; width: 150px;">
+    <img src="https://github.com/user-attachments/assets/f2c974d0-bd7c-42dc-b9d0-64f040d3078d" alt="logout" style="width: 100%; border-radius: 8px;" />
+    <p align="center">Logout</p>
+  </div>
+
+</div>
+
 
 ---
 
