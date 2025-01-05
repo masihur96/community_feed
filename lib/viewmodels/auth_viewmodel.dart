@@ -7,15 +7,15 @@ import 'package:flutter/material.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final DataProvider _dataProvider = DataProvider();
-
   LocalSession localSession = LocalSession();
 
   Future<bool?> logIn({
     required String email,
     required String password,
   }) async {
-    bool _isSuccess = false;
+    bool isSuccess = false;
 
+    notifyListeners();
     dynamic data = {
       "email": email.toLowerCase(),
       "password": password,
@@ -28,16 +28,21 @@ class AuthViewModel extends ChangeNotifier {
       try {
         if (response.statusCode == 200) {
           localSession.setAccessToken(response.data["token"]);
-          _isSuccess = true;
+
+          notifyListeners();
+          isSuccess = true;
         } else {
-          _isSuccess = false;
+          notifyListeners();
+          isSuccess = false;
         }
       } catch (err, stackTrace) {
-        _isSuccess = false;
+        isSuccess = false;
         log(err.toString());
         log(stackTrace.toString());
       }
-      return _isSuccess;
+
+      notifyListeners();
+      return isSuccess;
     }
   }
 

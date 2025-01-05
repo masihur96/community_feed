@@ -14,22 +14,21 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
-  final PostViewModel _postViewModel = PostViewModel();
-  List<CommunityModel> feedList = [];
+  PostViewModel postViewModel = PostViewModel();
 
-  bool _isFetchLoading = false;
-
+  bool _isLoading = false;
+  List<CommunityModel> _postList = [];
   @override
   void initState() {
-    getCommunityFeed(); //Set User Object from Preference
+    callMethod();
+    // TODO: implement initState
     super.initState();
   }
 
-  getCommunityFeed() async {
-    _isFetchLoading = true;
-    feedList = [];
-    feedList = await _postViewModel.getCommunity();
-    _isFetchLoading = false;
+  callMethod() async {
+    _isLoading = true;
+    _postList = await postViewModel.getCommunity();
+    _isLoading = false;
     setState(() {});
   }
 
@@ -42,7 +41,7 @@ class _FeedScreenState extends State<FeedScreen> {
           backgroundColor: FeedColors.tealDeep, // Background color
           title: GestureDetector(
             onTap: () {
-              getCommunityFeed();
+              //  getCommunityFeed();
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,12 +161,12 @@ class _FeedScreenState extends State<FeedScreen> {
 
             // Post Cards
             Expanded(
-              child: _isFetchLoading
-                  ? Center(child: const CircularProgressIndicator())
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
                   : ListView.builder(
-                      itemCount: feedList.length,
+                      itemCount: _postList.length,
                       itemBuilder: (context, index) {
-                        final post = feedList[index];
+                        final post = _postList[index];
                         return PostCard(
                           userName: post.name,
                           feedId: post.id.toString(),

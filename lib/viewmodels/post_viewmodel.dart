@@ -11,14 +11,15 @@ import '../models/community_model.dart';
 
 class PostViewModel extends ChangeNotifier {
   final DataProvider _dataProvider = DataProvider();
-
   LocalSession localSession = LocalSession();
+
   // Method to create a new Post
   Future<bool?> createFeed({
     required String post,
     String? bgColor,
   }) async {
     bool _isSuccess = false;
+    notifyListeners();
     // Prepare data for POST request
 
     String? sessionToken = await localSession.getAccessToken();
@@ -52,6 +53,8 @@ class PostViewModel extends ChangeNotifier {
     try {
       if (response!.statusCode == 200) {
         _isSuccess = true;
+
+        notifyListeners();
       } else {
         _isSuccess = false;
       }
@@ -65,10 +68,18 @@ class PostViewModel extends ChangeNotifier {
     return _isSuccess;
   }
 
+  final List<CommunityModel> _feedList = [];
+  bool _communityLoading = false;
+  bool get communityLoading => _communityLoading;
+  List<CommunityModel> get feedList {
+    return _feedList;
+  }
+
   // Method to fetch Feeds
   Future<List<CommunityModel>> getCommunity() async {
-    List<CommunityModel> feedList = [];
-
+    print("getCommunityCall");
+    _communityLoading = true;
+    notifyListeners();
     // Retrieve the session token
     String? sessionToken = await localSession.getAccessToken();
 
@@ -97,7 +108,7 @@ class PostViewModel extends ChangeNotifier {
         try {
           dynamic data = response.data;
           for (var json in data) {
-            feedList.add(
+            _feedList.add(
               CommunityModel(
                 id: json["id"] ?? 0,
                 schoolId: json["school_id"] ?? 0,
@@ -164,7 +175,8 @@ class PostViewModel extends ChangeNotifier {
               ),
             );
           }
-
+          _communityLoading = false;
+          notifyListeners();
           // CommunityModel.fromJson(response.data);
         } catch (e) {
           if (kDebugMode) {
@@ -184,6 +196,8 @@ class PostViewModel extends ChangeNotifier {
       }
     }
 
+    _communityLoading = false;
+    notifyListeners();
     return feedList;
   }
 

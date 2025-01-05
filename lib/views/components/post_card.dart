@@ -193,7 +193,7 @@ class _PostCardState extends State<PostCard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GestureDetector(
-                onLongPress: () {
+                onTap: () {
                   final PostViewModel _postViewModel = PostViewModel();
                   // navigate with a custom [HeroDialogRoute] to [ReactionsDialogWidget]
                   Navigator.of(context).push(

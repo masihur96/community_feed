@@ -2,11 +2,10 @@ import 'package:community_feed_app/utils/app_color.dart';
 import 'package:community_feed_app/utils/gradients.dart';
 import 'package:community_feed_app/utils/screen_size.dart';
 import 'package:community_feed_app/viewmodels/post_viewmodel.dart';
+import 'package:community_feed_app/views/screens/feed_screen.dart';
 import 'package:community_feed_app/widgets/feed_text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'feed_screen.dart';
 
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
@@ -38,6 +37,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         leadingWidth: 100,
         leading: TextButton(
           onPressed: () {
+            Navigator.pop(context);
             // Add logic to close the screen
           },
           child: Text(
