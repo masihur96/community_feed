@@ -37,6 +37,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
   getComment() async {
     commentList = await postViewModel.getComment(widget.feedId);
+
     setState(() {});
   }
 

@@ -313,7 +313,7 @@ class PostViewModel extends ChangeNotifier {
                 replyCount: json["reply_count"] ?? 0,
                 likeCount: json["like_count"] ?? 0,
                 commentTxt: json["comment_txt"] ?? "",
-                parrentId: json["parrent_id"],
+                parrentId: json["parent_id"],
                 createdAt: DateTime.tryParse(json["created_at"] ?? ""),
                 privateUserId: json["private_user_id"],
                 replies: json["replies"] == null
