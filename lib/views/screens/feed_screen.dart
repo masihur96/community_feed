@@ -171,6 +171,7 @@ class _FeedScreenState extends State<FeedScreen> {
                         return PostCard(
                           userName: post.name,
                           feedId: post.id.toString(),
+                          feedUserId: post.userId.toString(),
                           profilePic:
                               post.user == null ? "" : post.user!.profilePic,
                           postTime: post.createdAt.toString(),

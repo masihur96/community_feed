@@ -22,7 +22,7 @@ class APIs {
 
   //To Get Comment
   static const String getComment =
-      baseUrl + "/api/app/student/comment/getComment/:feedI_id?more=null";
+      baseUrl + "/api/app/student/comment/getComment";
 
   //To Create Comment
   static const String createComment =

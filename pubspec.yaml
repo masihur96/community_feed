@@ -36,7 +36,6 @@ dependencies:
   google_fonts:
   shared_preferences: ^2.1.0
   flutter_chat_reactions: ^0.1.1
-  flutter_animated_reaction:
 
 
 

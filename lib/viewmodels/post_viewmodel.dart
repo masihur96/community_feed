@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:community_feed_app/models/comment_model.dart';
 import 'package:community_feed_app/models/reaction_model.dart';
 import 'package:community_feed_app/services/data_provider.dart';
 import 'package:community_feed_app/services/local_session.dart';
@@ -246,8 +247,6 @@ class PostViewModel extends ChangeNotifier {
       header: headers, // Pass the headers
     );
 
-    print("RRRRRRRR;$response");
-
     if (response != null) {
       if (response.statusCode == 200) {
         try {
@@ -260,8 +259,6 @@ class PostViewModel extends ChangeNotifier {
               ),
             );
           }
-
-          // CommunityModel.fromJson(response.data);
         } catch (e) {
           if (kDebugMode) {
             print("Error parsing response: $e");
@@ -281,5 +278,128 @@ class PostViewModel extends ChangeNotifier {
     }
 
     return reactionList;
+  }
+
+  Future<List<CommentModel>> getComment(String feedId) async {
+    List<CommentModel> commentList = [];
+
+    // Retrieve the session token
+    String? sessionToken = await localSession.getAccessToken();
+
+    const String tokenType = "Bearer";
+
+    // Headers with token
+    final headers = {
+      "Authorization": "$tokenType $sessionToken", // Include the token
+    };
+
+    // API Call
+    var response = await _dataProvider.fetchData(
+      "GET",
+      "${APIs.getComment}/$feedId",
+      header: headers, // Pass the headers
+    );
+
+    if (response != null) {
+      if (response.statusCode == 200) {
+        try {
+          dynamic data = response.data;
+          for (var json in data) {
+            commentList.add(
+              CommentModel(
+                id: json["id"] ?? 0,
+                feedId: json["feed_id"] ?? 0,
+                userId: json["user_id"] ?? 0,
+                replyCount: json["reply_count"] ?? 0,
+                likeCount: json["like_count"] ?? 0,
+                commentTxt: json["comment_txt"] ?? "",
+                parrentId: json["parrent_id"],
+                createdAt: DateTime.tryParse(json["created_at"] ?? ""),
+                privateUserId: json["private_user_id"],
+                replies: json["replies"] == null
+                    ? []
+                    : List<dynamic>.from(json["replies"]!.map((x) => x)),
+                user: json["user"] == null
+                    ? null
+                    : CommentUser.fromJson(json["user"]),
+                reactionTypes: json["reaction_types"] == null
+                    ? []
+                    : List<dynamic>.from(json["reaction_types"]!.map((x) => x)),
+                privateUser: json["private_user"],
+                totalLikes: json["totalLikes"] == null
+                    ? []
+                    : List<dynamic>.from(json["totalLikes"]!.map((x) => x)),
+                commentlike: json["commentlike"],
+              ),
+            );
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            print("Error parsing response: $e");
+          }
+        }
+      } else {
+        if (kDebugMode) {
+          print(
+            "Failed with status code: ${response.statusCode} and response: ${response.data}",
+          );
+        }
+      }
+    } else {
+      if (kDebugMode) {
+        print("Response is null. Verify network connectivity and endpoint.");
+      }
+    }
+
+    return commentList;
+  }
+
+  Future<bool?> createComment({
+    required String feedId,
+    required String feedUserId,
+    required String commentTxt,
+  }) async {
+    bool _isSuccess = false;
+    // Prepare data for POST request
+
+    String? sessionToken = await localSession.getAccessToken();
+
+    const String tokenType = "Bearer";
+
+    // Headers with token
+    final headers = {
+      "Authorization": "$tokenType $sessionToken", // Include the token
+    };
+    dynamic data = {
+      "feed_id": feedId,
+      "feed_user_id": feedUserId,
+      "comment_txt": commentTxt,
+      "commentSource": "COMMUNITY",
+    };
+
+    // Perform the POST request
+    var response = await _dataProvider.fetchData(
+      "POST",
+      APIs.createComment,
+      header: headers,
+      data: data,
+    );
+
+    print("response::$response");
+
+    try {
+      if (response!.statusCode == 200) {
+        _isSuccess = true;
+      } else {
+        _isSuccess = false;
+      }
+    } catch (exception, stackTrace) {
+      // Log exception and capture it using Sentry for error monitoring
+      _isSuccess = false;
+      log(exception.toString());
+      log(stackTrace.toString());
+    }
+
+    return _isSuccess;
   }
 }

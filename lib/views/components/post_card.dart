@@ -1,6 +1,7 @@
 import 'package:community_feed_app/models/reaction_model.dart';
 import 'package:community_feed_app/utils/app_color.dart';
 import 'package:community_feed_app/utils/screen_size.dart';
+import 'package:community_feed_app/utils/time_ago.dart';
 import 'package:community_feed_app/viewmodels/post_viewmodel.dart';
 import 'package:community_feed_app/views/components/comment_bottomsheet.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_chat_reactions/utilities/hero_dialog_route.dart';
 class PostCard extends StatefulWidget {
   final String userName;
   final String feedId;
+  final String feedUserId;
   final String profilePic;
   final String postTime;
   final String postText;
@@ -21,6 +23,7 @@ class PostCard extends StatefulWidget {
     super.key,
     required this.userName,
     required this.feedId,
+    required this.feedUserId,
     required this.profilePic,
     required this.postTime,
     required this.postText,
@@ -171,17 +174,13 @@ class _PostCardState extends State<PostCard> {
                   const Icon(Icons.comment_bank_outlined,
                       size: 15, color: FeedColors.feedBlack),
                   const SizedBox(width: 5),
-                  GestureDetector(
-                      onTap: () {
-                        showBottomSheetDialog(context);
-                      },
-                      child: Text(
-                        "${widget.comments} Comments",
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall!
-                            .copyWith(color: FeedColors.feedBlack),
-                      )),
+                  Text(
+                    "${widget.comments} Comments",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall!
+                        .copyWith(color: FeedColors.feedBlack),
+                  ),
                 ],
               ),
             ],
@@ -258,7 +257,22 @@ class _PostCardState extends State<PostCard> {
               const SizedBox(width: 5),
               GestureDetector(
                   onTap: () {
-                    showBottomSheetDialog(context);
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: FeedColors.feedWhiteBG,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(16)),
+                      ),
+                      builder: (context) {
+                        return CommentBottomSheet(
+                          reactionList: reactionList,
+                          feedId: widget.feedId,
+                          feedUseId: widget.feedUserId,
+                        );
+                      },
+                    );
                   },
                   child: Text(
                     "Comment",
@@ -271,35 +285,5 @@ class _PostCardState extends State<PostCard> {
         ],
       ),
     );
-  }
-
-  String getTimeAgo(String timestamp) {
-    // Parse the timestamp
-    DateTime parsedTime = DateTime.parse(timestamp).toUtc();
-    DateTime currentTime = DateTime.now().toUtc();
-
-    // Calculate the difference
-    Duration difference = currentTime.difference(parsedTime);
-
-    if (difference.inDays >= 365) {
-      int years = (difference.inDays / 365).floor();
-      return '$years year${years > 1 ? 's' : ''} ago';
-    } else if (difference.inDays >= 30) {
-      int months = (difference.inDays / 30).floor();
-      return '$months month${months > 1 ? 's' : ''} ago';
-    } else if (difference.inDays >= 1) {
-      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
-    } else if (difference.inHours >= 1) {
-      return '${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago';
-    } else if (difference.inMinutes >= 1) {
-      return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
-    } else {
-      return 'just now';
-    }
-  }
-
-  void main() {
-    String timestamp = "2025-01-03T18:51:06.000+00:00";
-    print(getTimeAgo(timestamp)); // Example usage
   }
 }
