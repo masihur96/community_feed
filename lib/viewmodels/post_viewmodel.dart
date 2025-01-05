@@ -1,11 +1,12 @@
 import 'dart:developer';
 
+import 'package:community_feed_app/models/reaction_model.dart';
 import 'package:community_feed_app/services/data_provider.dart';
 import 'package:community_feed_app/services/local_session.dart';
 import 'package:community_feed_app/utils/apis.dart';
 import 'package:flutter/foundation.dart';
 
-import '../models/post_model.dart';
+import '../models/community_model.dart';
 
 class PostViewModel extends ChangeNotifier {
   final DataProvider _dataProvider = DataProvider();
@@ -183,5 +184,102 @@ class PostViewModel extends ChangeNotifier {
     }
 
     return feedList;
+  }
+
+  // Method to create a new Post
+  Future<bool?> createReaction({
+    required String feedId,
+    required String reactionType,
+  }) async {
+    bool _isSuccess = false;
+    // Prepare data for POST request
+    String? sessionToken = await localSession.getAccessToken();
+    const String tokenType = "Bearer";
+    // Headers with token
+    final headers = {
+      "Authorization": "$tokenType $sessionToken", // Include the token
+    };
+    dynamic data = {
+      "feed_id": feedId,
+      "reaction_type": reactionType,
+    };
+    // Perform the POST request
+    var response = await _dataProvider.fetchData(
+      "POST",
+      APIs.createReaction,
+      header: headers,
+      data: data,
+    );
+    try {
+      if (response!.statusCode == 200) {
+        _isSuccess = true;
+      } else {
+        _isSuccess = false;
+      }
+    } catch (exception, stackTrace) {
+      // Log exception and capture it using Sentry for error monitoring
+      _isSuccess = false;
+      log(exception.toString());
+      log(stackTrace.toString());
+    }
+    return _isSuccess;
+  }
+
+  // Method to fetch Feeds
+  Future<List<ReactionModel>> getReactionList(String feedId) async {
+    List<ReactionModel> reactionList = [];
+
+    // Retrieve the session token
+    String? sessionToken = await localSession.getAccessToken();
+
+    const String tokenType = "Bearer";
+
+    // Headers with token
+    final headers = {
+      "Authorization": "$tokenType $sessionToken", // Include the token
+    };
+
+    // API Call
+    var response = await _dataProvider.fetchData(
+      "GET",
+      "${APIs.reactionList}?feed_id=$feedId",
+      header: headers, // Pass the headers
+    );
+
+    print("RRRRRRRR;$response");
+
+    if (response != null) {
+      if (response.statusCode == 200) {
+        try {
+          dynamic data = response.data;
+          for (var json in data) {
+            reactionList.add(
+              ReactionModel(
+                totalLikes: json["id"] ?? 0,
+                reactionType: json["reaction_type"] ?? "Like",
+              ),
+            );
+          }
+
+          // CommunityModel.fromJson(response.data);
+        } catch (e) {
+          if (kDebugMode) {
+            print("Error parsing response: $e");
+          }
+        }
+      } else {
+        if (kDebugMode) {
+          print(
+            "Failed with status code: ${response.statusCode} and response: ${response.data}",
+          );
+        }
+      }
+    } else {
+      if (kDebugMode) {
+        print("Response is null. Verify network connectivity and endpoint.");
+      }
+    }
+
+    return reactionList;
   }
 }

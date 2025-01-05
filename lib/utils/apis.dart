@@ -18,19 +18,19 @@ class APIs {
 
   //To get Reaction
   static const String reactionList =
-      baseUrl + "api/app/teacher/community/getAllReactionType?feed_id=180370";
+      baseUrl + "/api/app/teacher/community/getAllReactionType";
 
   //To Get Comment
   static const String getComment =
-      baseUrl + "api/app/student/comment/getComment/:feedI_id?more=null";
+      baseUrl + "/api/app/student/comment/getComment/:feedI_id?more=null";
 
   //To Create Comment
   static const String createComment =
-      baseUrl + "api/app/student/comment/createComment";
+      baseUrl + "/api/app/student/comment/createComment";
 
 //To Add Reply
   static const String addReply =
-      baseUrl + "api/app/student/comment/createComment";
+      baseUrl + "/api/app/student/comment/createComment";
 
 //To Get Reply
   static const String getReply =

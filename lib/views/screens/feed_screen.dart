@@ -1,13 +1,12 @@
-import 'package:community_feed_app/models/post_model.dart';
+import 'package:community_feed_app/models/community_model.dart';
 import 'package:community_feed_app/utils/app_color.dart';
 import 'package:community_feed_app/utils/screen_size.dart';
 import 'package:community_feed_app/viewmodels/auth_viewmodel.dart';
+import 'package:community_feed_app/viewmodels/post_viewmodel.dart';
 import 'package:community_feed_app/views/components/post_card.dart';
 import 'package:community_feed_app/views/screens/create_post_screen.dart';
 import 'package:community_feed_app/views/screens/login_screen.dart';
 import 'package:flutter/material.dart';
-
-import '../../viewmodels/post_viewmodel.dart';
 
 class FeedScreen extends StatefulWidget {
   @override
@@ -171,6 +170,7 @@ class _FeedScreenState extends State<FeedScreen> {
                         final post = feedList[index];
                         return PostCard(
                           userName: post.name,
+                          feedId: post.id.toString(),
                           profilePic:
                               post.user == null ? "" : post.user!.profilePic,
                           postTime: post.createdAt.toString(),
